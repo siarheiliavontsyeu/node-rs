@@ -22,8 +22,24 @@ router.route('/').post(async (req, res) => {
   res.json(User.toResponse(user));
 });
 
-// router.route('/:id').put((req, res) => {
-//   throw Error('sa');
-// });
+router.route('/:id').put(async (req, res) => {
+  try {
+    const { login, password, name } = req.body;
+    const { id } = req.params;
+    const user = await usersService.update({ id, login, password, name });
+    res.json(User.toResponse(user));
+  } catch (e) {
+    res.status(404).send(e.message);
+  }
+});
+
+router.route('/:id').delete(async (req, res) => {
+  try {
+    await usersService.remove(req.params.id);
+    res.sendStatus(204);
+  } catch (e) {
+    res.status(404).send(e.message);
+  }
+});
 
 module.exports = router;
