@@ -1,11 +1,11 @@
-const Board = require('../resources/board/board.model');
+const Board = require('../resources/boards/board.model');
 
 const boardsDB = [];
 const boardsCount = 2;
 
 const createDB = () => {
   boardsDB.push({
-    id: '1',
+    id: 'test',
     title: ' test',
     colums: [{ id: '1', title: 'test', order: '1' }]
   });
