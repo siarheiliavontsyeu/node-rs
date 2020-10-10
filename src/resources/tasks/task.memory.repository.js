@@ -8,28 +8,44 @@ const getAll = async boardId => {
   return tasks;
 };
 
-const get = async boardId => {
-  const task = await DB.getTask(boardId);
+const get = async (boardId, taskId) => {
+  const task = await DB.getTask(boardId, taskId);
   if (!task) {
-    throw new Error(`The task with id: ${boardId} was not found`);
+    throw new Error(`The task with id: ${taskId} was not found`);
   }
   return task;
 };
 
 const create = async task => DB.createTask(task);
 
-const update = async ({ id, title, columns } = {}) => {
-  const task = await DB.updateTask({ id, title, columns });
+const update = async ({
+  title,
+  order,
+  description,
+  taskId,
+  userId,
+  boardId,
+  columnId
+} = {}) => {
+  const task = await DB.updateTask({
+    title,
+    order,
+    description,
+    taskId,
+    userId,
+    boardId,
+    columnId
+  });
   if (!task) {
-    throw new Error(`The task with id: ${id} was not found`);
+    throw new Error(`The task with id: ${taskId} was not found`);
   }
   return task;
 };
 
-const remove = async id => {
-  const task = await DB.removeTask(id);
+const remove = async (boardId, taskId) => {
+  const task = await DB.removeTask(boardId, taskId);
   if (!task) {
-    throw new Error(`The task with id: ${id} was not found`);
+    throw new Error(`The task with id: ${taskId} was not found`);
   }
   return task;
 };

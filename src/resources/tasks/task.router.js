@@ -30,24 +30,33 @@ router.route('/:boardId/tasks').post(async (req, res) => {
   res.json(Task.toResponse(task));
 });
 
-// router.route('/:id').put(async (req, res) => {
-//   try {
-//     const { title, columns } = req.body;
-//     const { id } = req.params;
-//     const task = await tasksService.update({ id, title, columns });
-//     res.json(Task.toResponse(task));
-//   } catch (e) {
-//     res.status(404).send(e.message);
-//   }
-// });
+router.route('/:boardId/tasks/:taskId').put(async (req, res) => {
+  try {
+    const { boardId, taskId } = req.params;
+    const { title, order, description, userId, columnId } = req.body;
+    const task = await tasksService.update({
+      title,
+      order,
+      description,
+      taskId,
+      userId,
+      boardId,
+      columnId
+    });
+    res.json(Task.toResponse(task));
+  } catch (e) {
+    res.status(404).send(e.message);
+  }
+});
 
-// router.route('/:id').delete(async (req, res) => {
-//   try {
-//     await tasksService.remove(req.params.id);
-//     res.sendStatus(204);
-//   } catch (e) {
-//     res.status(404).send(e.message);
-//   }
-// });
+router.route('/:boardId/tasks/:taskId').delete(async (req, res) => {
+  try {
+    const { boardId, taskId } = req.params;
+    await tasksService.remove(boardId, taskId);
+    res.sendStatus(204);
+  } catch (e) {
+    res.status(404).send(e.message);
+  }
+});
 
 module.exports = router;

@@ -28,35 +28,47 @@ const getAllTasks = async boardId => {
   return JSON.parse(JSON.stringify(tasks));
 };
 
-const getTask = async id => {
+const getTask = async (boardId, taskId) => {
   const task = tasksDB.find(_task => {
-    return _task.id === id;
+    return _task.id === taskId;
   });
+
   return task;
 };
 
 const createTask = async task => {
   tasksDB.push(task);
-  return getTask(task.id);
+  return getTask(task.boardId, task.id);
 };
 
-const updateTask = async ({ id, login, password, name } = {}) => {
-  let task = await getTask(id);
-  task = { ...task, login, password, name };
+const updateTask = async ({
+  title,
+  order,
+  description,
+  taskId,
+  userId,
+  boardId,
+  columnId
+} = {}) => {
+  let task = await getTask(boardId, taskId);
+  console.log(task);
+  task = { ...task, title, order, description, userId, boardId, columnId };
+  console.log(task);
   const taskIndex = tasksDB.findIndex(_task => {
-    return _task.id === id;
+    return _task.id === taskId;
   });
+  console.log(taskIndex);
   if (taskIndex >= 0) {
     tasksDB.splice(taskIndex, 1, task);
-    return getTask(id);
+    return getTask(boardId, taskId);
   }
   return false;
 };
 
-const removeTask = async id => {
-  const task = await getTask(id);
+const removeTask = async (boardId, taskId) => {
+  const task = await getTask(boardId, taskId);
   const taskIndex = tasksDB.findIndex(_task => {
-    return _task.id === id;
+    return _task.id === taskId;
   });
 
   if (taskIndex >= 0) {
