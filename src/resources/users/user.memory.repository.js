@@ -1,4 +1,5 @@
-const DB = require('../../common/inMemoryDb');
+const DB = require('../../common/inMemoryUsersDb');
+const TasksDB = require('../../common/inMemoryTasksDb');
 
 const getAll = async () => DB.getAllUsers();
 
@@ -24,6 +25,7 @@ const update = async ({ id, login, password, name } = {}) => {
 
 const remove = async id => {
   const user = await DB.removeUser(id);
+  await TasksDB.unassignUsersFromTask(user.id);
   if (!user) {
     throw new Error(`The user with id: ${id} was not found`);
   }
