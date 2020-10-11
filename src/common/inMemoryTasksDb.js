@@ -1,6 +1,6 @@
 const Task = require('../resources/tasks/task.model');
 
-const tasksDB = [];
+let tasksDB = [];
 const tasksCount = 2;
 
 const createDB = () => {
@@ -51,13 +51,10 @@ const updateTask = async ({
   columnId
 } = {}) => {
   let task = await getTask(boardId, taskId);
-  console.log(task);
   task = { ...task, title, order, description, userId, boardId, columnId };
-  console.log(task);
   const taskIndex = tasksDB.findIndex(_task => {
     return _task.id === taskId;
   });
-  console.log(taskIndex);
   if (taskIndex >= 0) {
     tasksDB.splice(taskIndex, 1, task);
     return getTask(boardId, taskId);
@@ -78,10 +75,26 @@ const removeTask = async (boardId, taskId) => {
   return false;
 };
 
+const unassignUsersFromTask = async userId => {
+  tasksDB.forEach(task => {
+    if (task.userId === userId) {
+      task.userId = null;
+    }
+  });
+};
+
+const removeTasksFromBoard = async boardId => {
+  tasksDB = tasksDB.filter(board => {
+    return board.boardId !== boardId;
+  });
+};
+
 module.exports = {
   getAllTasks,
   getTask,
   createTask,
   updateTask,
-  removeTask
+  removeTask,
+  unassignUsersFromTask,
+  removeTasksFromBoard
 };

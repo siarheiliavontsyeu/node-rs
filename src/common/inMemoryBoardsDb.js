@@ -33,9 +33,9 @@ const createBoard = async board => {
   return getBoard(board.id);
 };
 
-const updateBoard = async ({ id, login, password, name } = {}) => {
+const updateBoard = async ({ id, title, columns } = {}) => {
   let board = await getBoard(id);
-  board = { ...board, login, password, name };
+  board = { ...board, title, columns };
   const boardIndex = boardsDB.findIndex(_board => {
     return _board.id === id;
   });
