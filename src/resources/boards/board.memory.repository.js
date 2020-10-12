@@ -1,5 +1,4 @@
-const DB = require('../../common/inMemoryBoardsDb');
-const TasksDB = require('../../common/inMemoryTasksDb');
+const DB = require('../../common/inMemoryDb');
 
 const getAll = async () => DB.getAllBoards();
 
@@ -23,7 +22,7 @@ const update = async ({ id, title, columns } = {}) => {
 
 const remove = async id => {
   const board = await DB.removeBoard(id);
-  await TasksDB.removeTasksFromBoard(board.id);
+  await DB.removeTasksFromBoard(board.id);
   if (!board) {
     throw new Error(`The board with id: ${id} was not found`);
   }
