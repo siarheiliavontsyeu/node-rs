@@ -7,6 +7,7 @@ const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
 const logger = require('./utils/logger/logger');
+const NotFoundError = require('./utils/errors/NotFoundError');
 
 const app = express();
 app.disable('x-powered-by');
@@ -48,12 +49,29 @@ app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
 
+app.use('*', (req, res, next) => {
+  const error = new NotFoundError(
+    `Can not find right route for method ${req.method} and path ${req.originalUrl}`
+  );
+  next(error);
+});
+
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
   const { name, message, statusCode } = error;
   const errorMessage = `${name}: ${message}`;
 
-  console.log(errorMessage);
+  switch (error.name) {
+    case 'NotFoundError':
+      logger.info(errorMessage);
+      break;
+    case 'ValidationError':
+      logger.info(errorMessage);
+      break;
+    default:
+      logger.error(errorMessage);
+      break;
+  }
   const status = statusCode || 500;
   res.status(status).json({ errorMessage });
 });
