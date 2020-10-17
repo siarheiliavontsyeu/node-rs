@@ -15,21 +15,21 @@ const options = {
     level: 'info',
     filename: path.resolve(path.join('logs', 'app.log')),
     handleExceptions: false,
-    json: true,
+    json: false,
     maxsize: 5242880, // 5MB
     maxFiles: 1
   },
   fileError: {
     level: 'error',
     filename: path.resolve(path.join('logs', 'errors.log')),
-    handleExceptions: true,
-    json: true,
+    handleExceptions: false,
+    json: false,
     maxsize: 5242880, // 5MB
     maxFiles: 1
   },
   console: {
     level: 'debug',
-    handleExceptions: true,
+    handleExceptions: false,
     json: false,
     colorize: true
   }

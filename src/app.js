@@ -74,4 +74,16 @@ app.use((error, req, res, next) => {
   res.status(status).json({ errorMessage });
 });
 
+process.on('uncaughtException', error => {
+  const errorMessage = `uncaught Exception detected: ${error.message}`;
+  logger.error(errorMessage);
+});
+
+process.on('unhandledRejection', reason => {
+  const errorMessage = `Unhandled rejection detected: ${reason.message}`;
+  logger.error(errorMessage);
+});
+
+Promise.reject(Error('Oops!'));
+
 module.exports = app;
