@@ -16,26 +16,24 @@ const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 app.use(express.json());
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
-app.use(morgan('combined', { stream: logger.stream }));
 
-if (process.env.NODE_ENV === 'development') {
-  app.use((req, res, next) => {
-    let body = null;
-
-    if (req.method !== 'GET') {
-      body = { ...req.body };
-      delete body.password;
-      body = JSON.stringify(body);
-    }
-
-    logger.info(
-      `${req.method} ${req.url} query: ${JSON.stringify(req.query)} ${
-        body ? `body: ${body}` : ''
-      }`
-    );
-    next();
-  });
-}
+morgan.token('query', req => {
+  return JSON.stringify(req.query);
+});
+morgan.token('body', req => {
+  let body = {};
+  if (req.method !== 'GET') {
+    body = { ...req.body };
+    delete body.password;
+  }
+  return JSON.stringify(body);
+});
+app.use(
+  morgan(
+    ':remote-addr :remote-user :method :url HTTP/:http-version query-:query body-:body :status :res[content-length] - :response-time ms',
+    { stream: logger.stream }
+  )
+);
 
 app.use('/', (req, res, next) => {
   if (req.originalUrl === '/') {
