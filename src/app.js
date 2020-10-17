@@ -26,10 +26,14 @@ app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Internal Server Error');
-  next();
+// eslint-disable-next-line no-unused-vars
+app.use((error, req, res, next) => {
+  const { name, message, statusCode } = error;
+  const errorMessage = `${name}: ${message}`;
+
+  console.log(errorMessage);
+  const status = statusCode || 500;
+  res.status(status).json({ errorMessage });
 });
 
 module.exports = app;
