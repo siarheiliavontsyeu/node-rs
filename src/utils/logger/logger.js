@@ -11,9 +11,17 @@ const timezoned = () =>
   });
 
 const options = {
-  file: {
+  fileInfo: {
     level: 'info',
     filename: path.resolve(path.join('logs', 'app.log')),
+    handleExceptions: false,
+    json: true,
+    maxsize: 5242880, // 5MB
+    maxFiles: 1
+  },
+  fileError: {
+    level: 'error',
+    filename: path.resolve(path.join('logs', 'errors.log')),
     handleExceptions: true,
     json: true,
     maxsize: 5242880, // 5MB
@@ -37,7 +45,8 @@ const logger = createLogger({
   ),
   exitOnError: false,
   transports: [
-    new transports.File(options.file),
+    new transports.File(options.fileInfo),
+    new transports.File(options.fileError),
     new transports.Console(options.console)
   ]
 });
