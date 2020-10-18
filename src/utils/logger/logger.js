@@ -1,60 +1,58 @@
 const { format, createLogger, transports } = require('winston');
 const path = require('path');
-const { combine, timestamp: timeStamp, label: laBel, printf } = format;
-const logFormat = printf(({ level, message, label, timestamp }) => {
-  return `${timestamp} [${label}] ${level}: ${message}`;
-});
+const getDataFromRequest = require('./getDataFromRequest');
+const { handleError } = require('../errors/ErrorHandler');
 
-const timezoned = () =>
-  new Date().toLocaleString('ru-RU', {
-    timeZone: 'Europe/Minsk'
-  });
+const infoLogPath = path.resolve(path.join('logs', 'app-info.log'));
+const errorLogPath = path.resolve(path.join('logs', 'app-errors.log'));
 
-const options = {
-  fileInfo: {
-    level: 'info',
-    filename: path.resolve(path.join('logs', 'app.log')),
-    handleExceptions: false,
-    json: false,
-    maxsize: 5242880, // 5MB
-    maxFiles: 1
-  },
-  fileError: {
-    level: 'error',
-    filename: path.resolve(path.join('logs', 'errors.log')),
-    handleExceptions: false,
-    json: false,
-    maxsize: 5242880, // 5MB
-    maxFiles: 1
-  },
-  console: {
-    level: 'debug',
-    handleExceptions: false,
-    json: false,
-    colorize: true
-  }
+const consoleLoggerConfig = {
+  format: format.combine(format.colorize(), format.cli()),
+  transports: [new transports.Console()]
 };
 
-const logger = createLogger({
-  format: combine(
-    laBel({ label: 'Trello Service' }),
-    timeStamp({
-      format: timezoned
-    }),
-    logFormat
-  ),
-  exitOnError: false,
+const fileLoggerConfig = {
+  format: format.combine(format.timestamp(), format.json()),
   transports: [
-    new transports.File(options.fileInfo),
-    new transports.File(options.fileError),
-    new transports.Console(options.console)
+    new transports.File({
+      level: 'info',
+      filename: infoLogPath
+    }),
+    new transports.File({
+      level: 'error',
+      filename: errorLogPath
+    })
   ]
-});
-
-logger.stream = {
-  write(message) {
-    logger.info(message);
-  }
 };
 
-module.exports = logger;
+const loggerConsole = createLogger(consoleLoggerConfig);
+const loggerFile = createLogger(fileLoggerConfig);
+
+/* eslint-disable-next-line no-unused-vars */
+const incomingLogger = (req, res, next) => {
+  const { logToConsole, logToFile } = getDataFromRequest(req);
+  loggerConsole.log('info', logToConsole);
+  loggerFile.log('info', logToFile);
+  next();
+};
+
+const processErrorLogger = (message, errorType) => {
+  const time = new Date().toUTCString();
+  const errMSG = `${time} | ${errorType}: ${message}`;
+  loggerConsole.log('error', errMSG);
+  loggerFile.log('error', errMSG);
+  return loggerFile;
+};
+
+/* eslint-disable-next-line no-unused-vars */
+const errorLogger = (err, req, res, next) => {
+  const { statusCode, message } = handleError(err, res);
+  const level = statusCode >= 400 && statusCode < 500 ? 'warn' : 'error';
+  const { logToFile } = getDataFromRequest(req);
+  const time = new Date().toUTCString();
+  const errString = `${time} | Error ${statusCode}: ${message}`;
+  loggerConsole.log(level, errString);
+  loggerFile.log(level, `${errString} | Request: ${logToFile}`);
+};
+
+module.exports = { incomingLogger, processErrorLogger, errorLogger };

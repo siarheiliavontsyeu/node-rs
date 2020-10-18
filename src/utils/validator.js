@@ -1,5 +1,5 @@
 const Ajv = require('ajv');
-const ValidationError = require('./errors/ValidationError');
+const { ErrorHandler } = require('./errors/ErrorHandler');
 
 const validator = schema => (req, res, next) => {
   const ajv = new Ajv({ allErrors: true });
@@ -14,9 +14,9 @@ const validator = schema => (req, res, next) => {
   const body = JSON.stringify(req.body);
 
   next(
-    new ValidationError(
-      `${req.method}: ${req.originalUrl} [ ${errors} ]\n${body}`,
-      400
+    new ErrorHandler(
+      400,
+      `${req.method}: ${req.originalUrl} | [ ${errors} ] | ${body}`
     )
   );
 };

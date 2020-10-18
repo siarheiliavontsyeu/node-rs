@@ -1,9 +1,10 @@
 const DB = require('../../common/inMemoryDb');
+const { ErrorHandler } = require('../../utils/errors/ErrorHandler');
 
 const getAll = async boardId => {
   const tasks = await DB.getAllTasks(boardId);
   if (!tasks) {
-    throw new Error(`The task with id: ${boardId} was not found`);
+    throw new ErrorHandler(404, `The task with id: ${boardId} was not found`);
   }
   return tasks;
 };
@@ -11,7 +12,7 @@ const getAll = async boardId => {
 const get = async (boardId, taskId) => {
   const task = await DB.getTask(boardId, taskId);
   if (!task) {
-    throw new Error(`The task with id: ${taskId} was not found`);
+    throw new ErrorHandler(404, `The task with id: ${taskId} was not found`);
   }
   return task;
 };
@@ -37,7 +38,7 @@ const update = async ({
     columnId
   });
   if (!task) {
-    throw new Error(`The task with id: ${taskId} was not found`);
+    throw new ErrorHandler(404, `The task with id: ${taskId} was not found`);
   }
   return task;
 };
@@ -45,7 +46,7 @@ const update = async ({
 const remove = async (boardId, taskId) => {
   const task = await DB.removeTask(boardId, taskId);
   if (!task) {
-    throw new Error(`The task with id: ${taskId} was not found`);
+    throw new ErrorHandler(404, `The task with id: ${taskId} was not found`);
   }
   return task;
 };

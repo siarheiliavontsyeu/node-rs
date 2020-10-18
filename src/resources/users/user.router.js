@@ -9,12 +9,12 @@ router.route('/').get(async (req, res) => {
   res.json(users.map(User.toResponse));
 });
 
-router.route('/:id').get(async (req, res) => {
+router.route('/:id').get(async (req, res, next) => {
   try {
     const user = await usersService.get(req.params.id);
     res.json(User.toResponse(user));
   } catch (e) {
-    res.status(404).send(e.message);
+    return next(e);
   }
 });
 
