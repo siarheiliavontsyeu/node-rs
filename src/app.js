@@ -84,6 +84,7 @@ process.on('unhandledRejection', reason => {
   logger.error(errorMessage);
 });
 
-Promise.reject(Error('Oops!'));
+// throw Error('Oops!');
+// Promise.reject(Error('Oops!'));
 
 module.exports = app;
