@@ -5,6 +5,12 @@ const YAML = require('yamljs');
 const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
+const {
+  incomingLogger,
+  processErrorLogger,
+  errorLogger
+} = require('./utils/logger/logger');
+const { ErrorHandler } = require('./utils/errors/ErrorHandler');
 
 const app = express();
 app.disable('x-powered-by');
@@ -13,6 +19,8 @@ const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 app.use(express.json());
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+
+app.use(incomingLogger);
 
 app.use('/', (req, res, next) => {
   if (req.originalUrl === '/') {
@@ -24,12 +32,29 @@ app.use('/', (req, res, next) => {
 
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
-app.use('/boards/', taskRouter);
+boardRouter.use('/:boardId/tasks', taskRouter);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Internal Server Error');
-  next();
+app.use('*', (req, res, next) => {
+  const error = new ErrorHandler(
+    404,
+    `Can not find right route for method ${req.method} and path ${req.originalUrl}`
+  );
+  next(error);
 });
+
+app.use(errorLogger);
+
+process
+  .on('unhandledRejection', error => {
+    processErrorLogger(error.message, 'Unhandled Rejection');
+  })
+  .on('uncaughtException', error => {
+    const logger = processErrorLogger(error.message, 'Uncaught Exception');
+    const { exit } = process;
+    logger.on('finish', () => exit(1));
+  });
+
+// throw Error('Oops!');
+// Promise.reject(Error('Oops!'));
 
 module.exports = app;
