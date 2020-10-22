@@ -47,6 +47,8 @@ app.use(errorLogger);
 process
   .on('unhandledRejection', error => {
     processErrorLogger(error.message, 'Unhandled Rejection');
+    const { exit } = process;
+    exit(1);
   })
   .on('uncaughtException', error => {
     const logger = processErrorLogger(error.message, 'Uncaught Exception');
