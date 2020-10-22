@@ -46,12 +46,12 @@ app.use(errorLogger);
 
 process
   .on('unhandledRejection', error => {
-    processErrorLogger(error.message, 'Unhandled Rejection');
+    processErrorLogger(error.stack, 'Unhandled Rejection');
     const { exit } = process;
     exit(1);
   })
   .on('uncaughtException', error => {
-    const logger = processErrorLogger(error.message, 'Uncaught Exception');
+    const logger = processErrorLogger(error.stack, 'Uncaught Exception');
     const { exit } = process;
     logger.on('finish', () => exit(1));
   });
