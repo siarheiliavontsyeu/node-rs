@@ -6,11 +6,7 @@ require('express-async-errors');
 const userRouter = require('./resources/users/user.router');
 const boardRouter = require('./resources/boards/board.router');
 const taskRouter = require('./resources/tasks/task.router');
-const {
-  incomingLogger,
-  processErrorLogger,
-  errorLogger
-} = require('./utils/logger/logger');
+const { incomingLogger, errorLogger } = require('./utils/logger/logger');
 const { ErrorHandler } = require('./utils/errors/ErrorHandler');
 
 const app = express();
@@ -44,18 +40,6 @@ app.use('*', (req, res, next) => {
 });
 
 app.use(errorLogger);
-
-process
-  .on('unhandledRejection', error => {
-    processErrorLogger(error.stack, 'Unhandled Rejection');
-    const { exit } = process;
-    exit(1);
-  })
-  .on('uncaughtException', error => {
-    const logger = processErrorLogger(error.stack, 'Uncaught Exception');
-    const { exit } = process;
-    logger.on('finish', () => exit(1));
-  });
 
 // throw Error('Oops!');
 // Promise.reject(Error('Oops!'));
