@@ -1,10 +1,11 @@
 const DB = require('../../common/inMemoryDb');
-const { ErrorHandler } = require('../../utils/errors/ErrorHandler');
+const { NOT_FOUND_ERROR } = require('../../errors/appErrors');
+const ENTITY_NAME = 'task';
 
 const getAll = async boardId => {
   const tasks = await DB.getAllTasks(boardId);
   if (!tasks) {
-    throw new ErrorHandler(404, `The task with id: ${boardId} was not found`);
+    throw new NOT_FOUND_ERROR(ENTITY_NAME, { boardId });
   }
   return tasks;
 };
@@ -12,7 +13,7 @@ const getAll = async boardId => {
 const get = async (boardId, taskId) => {
   const task = await DB.getTask(boardId, taskId);
   if (!task) {
-    throw new ErrorHandler(404, `The task with id: ${taskId} was not found`);
+    throw new NOT_FOUND_ERROR(ENTITY_NAME, { boardId, taskId });
   }
   return task;
 };
@@ -38,7 +39,7 @@ const update = async ({
     columnId
   });
   if (!task) {
-    throw new ErrorHandler(404, `The task with id: ${taskId} was not found`);
+    throw new NOT_FOUND_ERROR(ENTITY_NAME, { taskId });
   }
   return task;
 };
@@ -46,7 +47,7 @@ const update = async ({
 const remove = async (boardId, taskId) => {
   const task = await DB.removeTask(boardId, taskId);
   if (!task) {
-    throw new ErrorHandler(404, `The task with id: ${taskId} was not found`);
+    throw new NOT_FOUND_ERROR(ENTITY_NAME, { taskId });
   }
   return task;
 };
