@@ -9,11 +9,15 @@ mongoose.connect(MONGO_CONNECTION_STRING, {
   useFindAndModify: false
 });
 
-mongoose.connection
-  .on('error', () => logger.error('MongoDB connection fail:'))
-  .once('open', () => {
+const db = mongoose.connection;
+
+db.on('error', () => logger.error('MongoDB connection fail:')).once(
+  'open',
+  async () => {
     logger.info('Successfully connect to MongoDB');
+    await db.dropDatabase();
     app.listen(PORT, () =>
       logger.info(`App is running on http://localhost:${PORT}`)
     );
-  });
+  }
+);
