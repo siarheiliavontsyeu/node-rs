@@ -14,7 +14,6 @@ const get = async id => {
 
 const create = async board => Board.create(board);
 
-// Посмотреть!
 const update = async board => {
   const { id } = board;
   await Board.updateOne({ _id: id }, board);
@@ -29,7 +28,6 @@ const remove = async id => {
   if (!board) {
     throw new NOT_FOUND_ERROR(ENTITY_NAME, { id });
   }
-  // await DB.removeTasksFromBoard(board.id);
   return board;
 };
 
