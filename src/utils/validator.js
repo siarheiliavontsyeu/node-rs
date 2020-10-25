@@ -1,5 +1,6 @@
 const Ajv = require('ajv');
-const { ErrorHandler } = require('./errors/ErrorHandler');
+const { BAD_REQUEST_ERROR } = require('../errors/appErrors');
+const ENTITY_NAME = 'validation';
 
 const validator = schema => (req, res, next) => {
   const ajv = new Ajv({ allErrors: true });
@@ -11,14 +12,8 @@ const validator = schema => (req, res, next) => {
   }
 
   const errors = validate.errors.map(({ message }) => message).join(', ');
-  const body = JSON.stringify(req.body);
-
-  next(
-    new ErrorHandler(
-      400,
-      `${req.method}: ${req.originalUrl} | [ ${errors} ] | ${body}`
-    )
-  );
+  const reqBody = req.body;
+  next(new BAD_REQUEST_ERROR(ENTITY_NAME, { errors, reqBody }));
 };
 
 module.exports = validator;
