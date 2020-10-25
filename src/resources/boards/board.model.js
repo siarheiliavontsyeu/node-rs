@@ -1,16 +1,22 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const Column = new Schema({
+  title: {
+    type: String
+  },
+  order: {
+    type: Number
+  }
+});
+
 const Board = new Schema(
   {
     title: {
       type: String,
       default: 'Title'
     },
-    columns: {
-      type: Array,
-      default: []
-    }
+    columns: [Column]
   },
   { collection: 'boards', versionKey: false }
 );
