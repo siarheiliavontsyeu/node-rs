@@ -8,13 +8,16 @@ const update = obj => usersRepo.update(obj);
 const remove = async id => {
   const allTasks = await tasksRepo.getAll();
   const tasks = allTasks.filter(task => task.userId === id);
-
+  const taskForUpdate = [];
   for (const task of tasks) {
-    await tasksRepo.update(task.boardId, task.id, {
-      ...task._doc,
-      userId: null
-    });
+    taskForUpdate.push(
+      tasksRepo.update(task.boardId, task.id, {
+        ...task._doc,
+        userId: null
+      })
+    );
   }
+  await Promise.all(taskForUpdate);
   await usersRepo.remove(id);
 };
 

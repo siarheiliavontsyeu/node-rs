@@ -7,10 +7,12 @@ const create = board => boardsRepo.create(board);
 const update = obj => boardsRepo.update(obj);
 const remove = async id => {
   const allTasks = await tasksRepo.getAllbyBoard(id);
+  const tasksForRemove = [];
   for (const task of allTasks) {
-    await tasksRepo.remove(task.boardId, task.id);
+    tasksForRemove.push(tasksRepo.remove(task.boardId, task.id));
   }
-  boardsRepo.remove(id);
+  await Promise.all(tasksForRemove);
+  await boardsRepo.remove(id);
 };
 
 module.exports = { getAll, get, create, update, remove };
