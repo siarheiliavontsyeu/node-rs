@@ -29,7 +29,6 @@ const remove = async id => {
   if (!user) {
     throw new NOT_FOUND_ERROR(ENTITY_NAME, { id });
   }
-  // await DB.unassignUsersFromTask(user.id);
   return user;
 };
 

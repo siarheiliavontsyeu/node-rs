@@ -8,7 +8,7 @@ const tasksService = require('./task.service');
 router
   .route('/')
   .get(async (req, res) => {
-    const tasks = await tasksService.getAll(req.params.boardId);
+    const tasks = await tasksService.getAll();
     res.status(OK).json(tasks.map(toResponse));
   })
   .post(async (req, res) => {
@@ -26,8 +26,7 @@ router
   })
   .put(async (req, res) => {
     const { boardId, taskId } = req.params;
-    const task = await tasksService.update({
-      taskId,
+    const task = await tasksService.update(taskId, {
       boardId,
       ...req.body
     });
