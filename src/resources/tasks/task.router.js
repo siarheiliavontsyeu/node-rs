@@ -1,6 +1,6 @@
 const router = require('express').Router({ mergeParams: true });
 const { OK, NO_CONTENT } = require('http-status-codes');
-const Task = require('./task.model');
+const { toResponse } = require('./task.model');
 const tasksService = require('./task.service');
 // const validator = require('../../utils/validator');
 // const { taskCreate, taskUpdate } = require('../../schemas/taskSchema');
@@ -8,13 +8,14 @@ const tasksService = require('./task.service');
 router
   .route('/')
   .get(async (req, res) => {
-    const tasks = await tasksService.getAll(req.params.boardId);
-    res.status(OK).json(tasks.map(Task.toResponse));
+    const { boardId } = req.params;
+    const tasks = await tasksService.getAll(boardId);
+    res.status(OK).json(tasks.map(toResponse));
   })
   .post(async (req, res) => {
     const { boardId } = req.params;
-    const task = await tasksService.create(new Task({ ...req.body, boardId }));
-    res.status(OK).json(Task.toResponse(task));
+    const task = await tasksService.create({ ...req.body, boardId });
+    res.status(OK).json(toResponse(task));
   });
 
 router
@@ -22,16 +23,15 @@ router
   .get(async (req, res) => {
     const { boardId, taskId } = req.params;
     const task = await tasksService.get(boardId, taskId);
-    res.status(OK).json(Task.toResponse(task));
+    res.status(OK).json(toResponse(task));
   })
   .put(async (req, res) => {
     const { boardId, taskId } = req.params;
-    const task = await tasksService.update({
-      taskId,
-      boardId,
-      ...req.body
+    const task = await tasksService.update(boardId, taskId, {
+      ...req.body,
+      boardId
     });
-    res.status(OK).json(Task.toResponse(task));
+    res.status(OK).json(toResponse(task));
   })
   .delete(async (req, res) => {
     const { boardId, taskId } = req.params;
