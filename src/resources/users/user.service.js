@@ -10,7 +10,10 @@ const remove = async id => {
   const tasks = allTasks.filter(task => task.userId === id);
 
   for (const task of tasks) {
-    await tasksRepo.update(task.id, { ...task._doc, userId: null });
+    await tasksRepo.update(task.boardId, task.id, {
+      ...task._doc,
+      userId: null
+    });
   }
   await usersRepo.remove(id);
 };
