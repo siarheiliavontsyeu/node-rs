@@ -2,8 +2,6 @@ const router = require('express').Router({ mergeParams: true });
 const { OK, NO_CONTENT } = require('http-status-codes');
 const { toResponse } = require('./task.model');
 const tasksService = require('./task.service');
-// const validator = require('../../utils/validator');
-// const { taskCreate, taskUpdate } = require('../../schemas/taskSchema');
 
 router
   .route('/')

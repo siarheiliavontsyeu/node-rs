@@ -2,8 +2,6 @@ const router = require('express').Router();
 const { OK, NO_CONTENT } = require('http-status-codes');
 const { toResponse } = require('./user.model');
 const usersService = require('./user.service');
-const validator = require('../../utils/validator');
-const { userCreate, userUpdate } = require('../../schemas/userSchema');
 
 router
   .route('/')
@@ -11,7 +9,7 @@ router
     const users = await usersService.getAll();
     res.status(OK).json(users.map(toResponse));
   })
-  .post([validator(userCreate)], async (req, res) => {
+  .post(async (req, res) => {
     const user = await usersService.create(req.body);
     res.status(OK).json(toResponse(user));
   });
@@ -22,7 +20,7 @@ router
     const user = await usersService.get(req.params.id);
     res.status(OK).json(toResponse(user));
   })
-  .put([validator(userUpdate)], async (req, res) => {
+  .put(async (req, res) => {
     const { id } = req.params;
     const user = await usersService.update({ ...req.body, id });
     res.status(OK).json(toResponse(user));
