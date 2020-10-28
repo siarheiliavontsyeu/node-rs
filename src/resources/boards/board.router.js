@@ -2,6 +2,8 @@ const router = require('express').Router();
 const { OK, NO_CONTENT } = require('http-status-codes');
 const { toResponse } = require('./board.model');
 const boardsService = require('./board.service');
+const { id, board } = require('../../utils/validation/schemas');
+const validator = require('../../utils/validation/validator');
 
 router
   .route('/')
@@ -9,23 +11,26 @@ router
     const boards = await boardsService.getAll();
     res.status(OK).json(boards.map(toResponse));
   })
-  .post(async (req, res) => {
-    const board = await boardsService.create(req.body);
-    res.status(OK).json(toResponse(board));
+  .post(validator(board, 'body'), async (req, res) => {
+    const resBoard = await boardsService.create(req.body);
+    res.status(OK).json(toResponse(resBoard));
   });
 
 router
   .route('/:id')
-  .get(async (req, res) => {
-    const board = await boardsService.get(req.params.id);
-    res.status(OK).json(toResponse(board));
+  .get(validator(id, 'params'), async (req, res) => {
+    const resBoard = await boardsService.get(req.params.id);
+    res.status(OK).json(toResponse(resBoard));
   })
-  .put(async (req, res) => {
-    const { id } = req.params;
-    const board = await boardsService.update({ ...req.body, id });
-    res.status(OK).json(toResponse(board));
-  })
-  .delete(async (req, res) => {
+  .put(
+    [validator(id, 'params'), validator(board, 'body')],
+    async (req, res) => {
+      const { id: reqID } = req.params;
+      const resBoard = await boardsService.update({ ...req.body, reqID });
+      res.status(OK).json(toResponse(resBoard));
+    }
+  )
+  .delete(validator(id, 'params'), async (req, res) => {
     await boardsService.remove(req.params.id);
     res.sendStatus(NO_CONTENT);
   });
