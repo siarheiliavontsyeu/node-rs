@@ -24,7 +24,7 @@ router
   })
   .put([validator(id, 'params'), validator(user, 'body')], async (req, res) => {
     const { id: reqID } = req.params;
-    const resUser = await usersService.update({ ...req.body, reqID });
+    const resUser = await usersService.update({ ...req.body, id: reqID });
     res.status(OK).json(toResponse(resUser));
   })
   .delete(validator(id, 'params'), async (req, res) => {
