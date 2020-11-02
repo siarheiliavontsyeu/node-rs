@@ -4,13 +4,15 @@ const path = require('path');
 const YAML = require('yamljs');
 const createError = require('http-errors');
 const { OK, NOT_FOUND } = require('http-status-codes');
-require('express-async-errors');
-const userRouter = require('./resources/users/user.router');
-const boardRouter = require('./resources/boards/board.router');
-const taskRouter = require('./resources/tasks/task.router');
 const morgan = require('morgan');
 const winston = require('./common/logging');
 const errorHandler = require('./errors/errorHandler');
+require('express-async-errors');
+
+const loginRouter = require('./resources/login/login.router');
+const userRouter = require('./resources/users/user.router');
+const boardRouter = require('./resources/boards/board.router');
+const taskRouter = require('./resources/tasks/task.router');
 
 const app = express();
 app.disable('x-powered-by');
@@ -37,6 +39,7 @@ app.use('/', (req, res, next) => {
   next();
 });
 
+app.use('/login', loginRouter);
 app.use('/users', userRouter);
 app.use('/boards', boardRouter);
 boardRouter.use('/:boardId/tasks', taskRouter);

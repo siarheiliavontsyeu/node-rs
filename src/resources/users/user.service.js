@@ -1,6 +1,6 @@
 const usersRepo = require('./user.db.repository');
 const tasksRepo = require('../tasks/task.db.repository');
-const hashPassword = require('../../utils/hash-password');
+const { hashPassword } = require('../../utils/hash-helpers');
 
 const getAll = () => usersRepo.getAll();
 const get = id => usersRepo.get(id);

@@ -1,4 +1,4 @@
-const { NOT_FOUND, BAD_REQUEST } = require('http-status-codes');
+const { NOT_FOUND, BAD_REQUEST, FORBIDDEN } = require('http-status-codes');
 
 class NotFoundError extends Error {
   constructor(entity, params, message) {
@@ -16,7 +16,15 @@ class BadRequestError extends Error {
   }
 }
 
+class IncorrectLoginPassword extends Error {
+  constructor(entity, body, message) {
+    super(message || `Incorrect ${entity} creds with: ${JSON.stringify(body)}`);
+    this.status = FORBIDDEN;
+  }
+}
+
 module.exports = {
   NOT_FOUND_ERROR: NotFoundError,
-  BAD_REQUEST_ERROR: BadRequestError
+  BAD_REQUEST_ERROR: BadRequestError,
+  INCORRECT_LOGIN_OR_PASSWORD: IncorrectLoginPassword
 };
