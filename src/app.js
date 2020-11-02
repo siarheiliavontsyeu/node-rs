@@ -7,6 +7,7 @@ const { OK, NOT_FOUND } = require('http-status-codes');
 const morgan = require('morgan');
 const winston = require('./common/logging');
 const errorHandler = require('./errors/errorHandler');
+const checkToken = require('./common/check-token');
 require('express-async-errors');
 
 const loginRouter = require('./resources/login/login.router');
@@ -19,6 +20,7 @@ app.disable('x-powered-by');
 const swaggerDocument = YAML.load(path.join(__dirname, '../doc/api.yaml'));
 
 app.use(express.json());
+app.use(checkToken);
 
 app.use('/doc', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
